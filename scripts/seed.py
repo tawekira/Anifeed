@@ -1,0 +1,57 @@
+from sqlmodel import Session
+import json
+from models import Anime, User
+
+def to_anime(entry: dict):
+    return Anime(
+        title = entry["title"],
+        type = entry["type"],
+        episodes = entry["episodes"],
+        status = entry["status"],
+        synonyms = entry["synonyms"],
+        tags = entry["tags"],
+        picture = entry["picture"],
+        thumbnail = entry["thumbnail"]
+    )
+
+def load_data():
+    with open("data/anime-offline-database-minified.json", "r", encoding = "utf-8") as f:
+        payload = json.load(f)
+    return payload["data"]
+
+def batch_upload(data, engine, batch_size = 1000):
+    with Session(engine) as session:
+        batch = []
+        for i, entry in enumerate(data, start=1):
+            batch.append(to_anime(entry))
+            if len(batch) >= batch_size:
+                session.add_all(batch)
+                session.commit()
+                batch = []
+                print(f"Inserted {i}/{len(data)}")
+        if batch:
+            session.add_all(batch)
+            session.commit()
+
+def seed_test_user(engine):
+    test_user = User(
+        username = "user"
+    )
+    with Session(engine) as session:
+        session.add(test_user)
+        session.commit()
+
+if __name__ == "__main__":
+    from tests.conftest import engine
+    import models
+    from sqlmodel import SQLModel
+
+    SQLModel.metadata.create_all(engine)
+    data = load_data()
+    batch_upload(data, engine)
+    seed_test_user(engine)
+
+
+
+
+
