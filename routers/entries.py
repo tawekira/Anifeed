@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from models import WatchEntry, WatchEntryCreate, Anime, User, WatchStatus, AnimeStatus
+from models import WatchEntry, WatchEntryCreate, Anime, User, WatchStatus, AnimeStatus, Event, EventStatus
 from db import get_session, get_current_user
 
 router = APIRouter(
@@ -57,6 +57,33 @@ def create_entry(
             
     statement = select(WatchEntry).where(WatchEntry.anime_id == anime.id, WatchEntry.user_id == user.id)
     prev_entry = session.exec(statement).first()
+
+    # Event Logging
+    event_type = final_status.to_event_status
+    from_episode = prev_entry.episode if prev_entry else 0
+    to_episode = final_episode
+
+    if event_type:
+        event = Event(
+            user_id=user.id,
+            anime_id=anime.id,
+            username=user.username,
+            anime_name=anime.title,
+            event_type=event_type,
+            event_metadata={"from_episode": from_episode, "to_episode": to_episode}
+        )
+        session.add(event)
+
+    if user_entry.score:
+        event = Event(
+            user_id=user.id,
+            anime_id=anime.id,
+            username=user.username,
+            anime_name=anime.title,
+            event_type=EventStatus.RATED,
+            event_metadata={"score": user_entry.score}
+        )
+        session.add(event)
 
     if prev_entry:
         prev_entry.status = final_status

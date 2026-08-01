@@ -49,6 +49,15 @@ class WatchStatus(StrEnum):
     PLANTOWATCH = "Plan to Watch"
     REWATCHING = "Rewatching"
 
+    @property
+    def to_event_status(self):
+        mapping = {
+            WatchStatus.WATCHING: EventStatus.WATCHED,
+            WatchStatus.REWATCHING: EventStatus.REWATCHED,
+            WatchStatus.COMPLETED: EventStatus.COMPLETED
+        }
+        return mapping.get(self)
+
 class WatchEntryCreate(BaseModel):
     anime_id: int
     status: WatchStatus
@@ -57,8 +66,8 @@ class WatchEntryCreate(BaseModel):
     
 class WatchEntry(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id")
-    anime_id: int = Field(foreign_key="anime.id")
+    user_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
+    anime_id: int = Field(foreign_key="anime.id", ondelete="CASCADE")
     status: WatchStatus
     episode: int | None = Field(default=None, ge=0)
     score: int | None = Field(default=None, ge=1, le=10)
@@ -71,8 +80,10 @@ class EventStatus(StrEnum):
 
 class Event(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id")
-    anime_id: int = Field(foreign_key="anime.id")
+    user_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
+    anime_id: int = Field(foreign_key="anime.id", ondelete="CASCADE")
+    username: str
+    anime_name: str
     event_type: EventStatus
     event_metadata: dict = Field(sa_type=sa.JSON)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

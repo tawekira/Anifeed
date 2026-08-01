@@ -42,7 +42,7 @@ def seed_test_user(engine):
         session.commit()
 
 if __name__ == "__main__":
-    from tests.conftest import engine
+    from db import engine
     import models
     from sqlmodel import SQLModel
 
