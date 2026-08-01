@@ -34,26 +34,31 @@ def create_entry(
     if anime.episodes and user_entry.episode > anime.episodes:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail = f"Episodes watched ({user_entry.episode}) cannot exceed anime total episode count ({anime.episodes})")
 
+    if anime.status == AnimeStatus.UPCOMING and user_entry.status != WatchStatus.PLANTOWATCH:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail = "Upcoming anime can only be added to your Plan to Watch list")
+
+    if anime.status == AnimeStatus.UPCOMING and user_entry.episode != 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail = "Episodes watched for upcoming anime must be 0")
+
+    if anime.status == AnimeStatus.ONGOING and user_entry.status == WatchStatus.COMPLETED:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail = "Ongoing anime cannot be marked as completed")
+                            
     final_status = user_entry.status
     final_episode = user_entry.episode
 
-    if anime.status == AnimeStatus.UPCOMING and final_status in (WatchStatus.WATCHING, WatchStatus.REWATCHING, WatchStatus.COMPLETED):
-        final_status = WatchStatus.PLANTOWATCH
-        final_episode = 0
-    elif anime.status == AnimeStatus.ONGOING and final_status == WatchStatus.COMPLETED:
-        final_status = WatchStatus.WATCHING
-    elif anime.episodes and user_entry.episode == anime.episodes and final_status in (WatchStatus.WATCHING, WatchStatus.REWATCHING):
+    if anime.episodes and user_entry.episode == anime.episodes and (final_status in (WatchStatus.WATCHING, WatchStatus.REWATCHING) and anime.status != AnimeStatus.ONGOING):
         final_status = WatchStatus.COMPLETED
 
     if anime.episodes and final_status == WatchStatus.COMPLETED:
         final_episode = anime.episodes
+
+    if final_status == WatchStatus.PLANTOWATCH:
+        final_episode = 0
             
     statement = select(WatchEntry).where(WatchEntry.anime_id == anime.id, WatchEntry.user_id == user.id)
     prev_entry = session.exec(statement).first()
 
     if prev_entry:
-        if prev_entry.episode > user_entry.episode and final_status == WatchStatus.WATCHING:
-            final_status = WatchStatus.REWATCHING
         prev_entry.status = final_status
         prev_entry.episode = final_episode
         prev_entry.score = user_entry.score

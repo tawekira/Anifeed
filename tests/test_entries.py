@@ -23,10 +23,66 @@ def test_create_entry(logged_in_context):
         "score": 8
     }
 
-def test_plan_to_watch(logged_in_context):
+# logic
+
+def test_episodes_completed(logged_in_context):
     payload = {
-        "anime_id": 20,
+        "anime_id": 3,
+        "status": WatchStatus.WATCHING,
+        "episode": 8,
+        "score": None
+    }
+    response = client.post("/entries", json=payload, headers={"user": "user"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "user_id": 1,
+        "anime_id": 3,
         "status": WatchStatus.COMPLETED,
+        "episode": 8,
+        "score": None
+    }
+
+def test_status_completed(logged_in_context):
+    payload = {
+        "anime_id": 3,
+        "status": WatchStatus.COMPLETED,
+        "episode": 5,
+        "score": None
+    }
+    response = client.post("/entries", json=payload, headers={"user": "user"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "user_id": 1,
+        "anime_id": 3,
+        "status": WatchStatus.COMPLETED,
+        "episode": 8,
+        "score": None
+    }
+
+def test_status_watching_ongoing(logged_in_context):
+    payload = {
+        "anime_id": 58,
+        "status": WatchStatus.WATCHING,
+        "episode": 12,
+        "score": None
+    }
+    response = client.post("/entries", json=payload, headers={"user": "user"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "user_id": 1,
+        "anime_id": 58,
+        "status": WatchStatus.WATCHING,
+        "episode": 12,
+        "score": None
+    }
+
+def test_status_plantowatch(logged_in_context):
+    payload = {
+        "anime_id": 1,
+        "status": WatchStatus.PLANTOWATCH,
         "episode": 1,
         "score": None
     }
@@ -35,10 +91,63 @@ def test_plan_to_watch(logged_in_context):
     assert response.json() == {
         "id": 1,
         "user_id": 1,
-        "anime_id": 20,
+        "anime_id": 1,
         "status": WatchStatus.PLANTOWATCH,
         "episode": 0,
         "score": None
     }
+
+# Exceptions
+
+def test_invalid_anime_id(logged_in_context):
+    payload = {
+        "anime_id": 0,
+        "status": WatchStatus.COMPLETED,
+        "episode": 5,
+        "score": None
+    }
+    response = client.post("/entries", json=payload, headers={"user": "user"})
+    assert response.status_code == 404
+
+def test_invalid_anime_episodes(logged_in_context):
+    payload = {
+        "anime_id": 1,
+        "status": WatchStatus.COMPLETED,
+        "episode": 10,
+        "score": None
+    }
+    response = client.post("/entries", json=payload, headers={"user": "user"})
+    assert response.status_code == 400
+
+def test_upcoming_anime_status(logged_in_context):
+    payload = {
+        "anime_id": 20,
+        "status": WatchStatus.COMPLETED,
+        "episode": 0,
+        "score": None
+    }
+    response = client.post("/entries", json=payload, headers={"user": "user"})
+    assert response.status_code == 400
+
+def test_upcoming_anime_episode(logged_in_context):
+    payload = {
+        "anime_id": 20,
+        "status": WatchStatus.PLANTOWATCH,
+        "episode": 1,
+        "score": None
+    }
+    response = client.post("/entries", json=payload, headers={"user": "user"})
+    assert response.status_code == 400
+
+def test_ongoing_anime_status(logged_in_context):
+    payload = {
+        "anime_id": 58,
+        "status": WatchStatus.COMPLETED,
+        "episode": 1,
+        "score": None
+    }
+    response = client.post("/entries", json=payload, headers={"user": "user"})
+    assert response.status_code == 400
+
 
 
