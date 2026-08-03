@@ -14,6 +14,10 @@ class OffsetPaginatedResponse(BaseModel, Generic[T]):
     limit: int
     offset: int
 
+class CursorPaginatedResponse(BaseModel, Generic[T]):
+    data: list[Optional[T]]
+    next: Optional[str]
+
 class Type(StrEnum):
     TV = "TV"
     MOVIE = "MOVIE"
