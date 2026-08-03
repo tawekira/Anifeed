@@ -14,7 +14,11 @@ def test_create_entry(logged_in_context):
     }
     response = client.post("/entries", json=payload, headers={"user": "user"})
     assert response.status_code == 200
-    assert response.json() == {
+
+    body = response.json()
+    body.pop("updated_at")
+
+    assert body == {
         "id": 1,
         "user_id": 1,
         "anime_id": 1,
@@ -34,7 +38,11 @@ def test_episodes_completed(logged_in_context):
     }
     response = client.post("/entries", json=payload, headers={"user": "user"})
     assert response.status_code == 200
-    assert response.json() == {
+
+    body = response.json()
+    body.pop("updated_at")
+
+    assert body == {
         "id": 1,
         "user_id": 1,
         "anime_id": 3,
@@ -52,7 +60,11 @@ def test_status_completed(logged_in_context):
     }
     response = client.post("/entries", json=payload, headers={"user": "user"})
     assert response.status_code == 200
-    assert response.json() == {
+
+    body = response.json()
+    body.pop("updated_at")
+
+    assert body == {
         "id": 1,
         "user_id": 1,
         "anime_id": 3,
@@ -70,7 +82,11 @@ def test_status_watching_ongoing(logged_in_context):
     }
     response = client.post("/entries", json=payload, headers={"user": "user"})
     assert response.status_code == 200
-    assert response.json() == {
+
+    body = response.json()
+    body.pop("updated_at")
+
+    assert body == {
         "id": 1,
         "user_id": 1,
         "anime_id": 58,
@@ -88,7 +104,11 @@ def test_status_plantowatch(logged_in_context):
     }
     response = client.post("/entries", json=payload, headers={"user": "user"})
     assert response.status_code == 200
-    assert response.json() == {
+
+    body = response.json()
+    body.pop("updated_at")
+
+    assert body == {
         "id": 1,
         "user_id": 1,
         "anime_id": 1,

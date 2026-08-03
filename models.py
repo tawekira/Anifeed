@@ -1,8 +1,18 @@
 from sqlmodel import SQLModel, Field
 from pydantic import BaseModel, Field as PydanticField
 import sqlalchemy as sa
+from sqlalchemy import Index, UniqueConstraint
 from enum import StrEnum
+from typing import Generic, TypeVar, Optional
 from datetime import datetime, timezone
+
+T = TypeVar("T")
+
+class OffsetPaginatedResponse(BaseModel, Generic[T]):
+    data: list[T]
+    total: int
+    limit: int
+    offset: int
 
 class Type(StrEnum):
     TV = "TV"
@@ -71,6 +81,12 @@ class WatchEntry(SQLModel, table=True):
     status: WatchStatus
     episode: int | None = Field(default=None, ge=0)
     score: int | None = Field(default=None, ge=1, le=10)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+ 
+    __table_args__ = (
+        Index("idx_watchentry_user_updated", "user_id", "updated_at"),
+        UniqueConstraint("user_id", "anime_id", name="uq_watchentry_user_anime")
+    )
 
 class EventStatus(StrEnum):
     WATCHED = "Watched"
@@ -88,7 +104,18 @@ class Event(SQLModel, table=True):
     event_metadata: dict = Field(sa_type=sa.JSON)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+    __table_args__ = (
+        Index("idx_event_created_id", "created_at", "id"),
+    )
 
+class Follow(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    follower_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
+    followed_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
 
+    __table_args__ = (
+        Index("idx_follow_follower", "follower_id"),
+        UniqueConstraint("follower_id", "followed_id", name="uq_follow_pair")
+    )
 
 
