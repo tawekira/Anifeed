@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, func
 from sqlalchemy.exc import IntegrityError
 from models import WatchEntry, WatchEntryCreate, Anime, User, WatchStatus, AnimeStatus, Event, EventStatus, OffsetPaginatedResponse
-from db import get_session, get_current_user
+from db import get_session
 from datetime import datetime, timezone
 from requests import Request
+from security import get_current_user
 
 router = APIRouter(
     prefix="/entries",
-    tags = ["entries"]
+    tags=["entries"]
 )
 
 @router.get("/{username}", response_model=OffsetPaginatedResponse[WatchEntry])
@@ -121,7 +122,7 @@ def create_entry(
             session.commit()
         except IntegrityError:
             session.rollback()
-            raise HTTPException(status_code=409, detail="Entry already exists")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Entry already exists")
         session.refresh(prev_entry)
         return prev_entry
 

@@ -18,6 +18,10 @@ class CursorPaginatedResponse(BaseModel, Generic[T]):
     data: list[Optional[T]]
     next: Optional[str]
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 class Type(StrEnum):
     TV = "TV"
     MOVIE = "MOVIE"
@@ -45,6 +49,7 @@ class Anime(SQLModel, table=True):
 
 class UserCreate(BaseModel):
     username: str = PydanticField(pattern=r"^[a-zA-Z0-9._]{3,20}$")
+    password: str = Field(min_length=8)
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -54,6 +59,7 @@ class User(SQLModel, table=True):
         regex=r"^[a-zA-Z0-9._]{3,20}$", 
         description="Username must be 3-20 characters and contain only alphanumeric, underscores, or periods."
     )
+    hashed_password: str
 
 class WatchStatus(StrEnum):
     WATCHING = "Watching"

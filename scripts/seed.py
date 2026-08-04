@@ -33,14 +33,6 @@ def batch_upload(data, engine, batch_size = 1000):
             session.add_all(batch)
             session.commit()
 
-def seed_test_user(engine):
-    test_user = User(
-        username = "user"
-    )
-    with Session(engine) as session:
-        session.add(test_user)
-        session.commit()
-
 if __name__ == "__main__":
     from db import engine
     import models
@@ -49,7 +41,7 @@ if __name__ == "__main__":
     SQLModel.metadata.create_all(engine)
     data = load_data()
     batch_upload(data, engine)
-    seed_test_user(engine)
+
 
 
 

@@ -14,14 +14,9 @@ def get_session():
     with Session(engine) as session:
         yield session
 
-def get_current_user(
-    user: str = Header(...),
-    session: Session = Depends(get_session)
-): 
-    user = session.exec(select(User).where(User.username == user)).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    return user
+def get_user(username: str, session: Session):
+    user = session.exec(select(User).where(User.username == username)).first()
+    return user 
         
 if __name__ == "__main__":
     create_db_and_tables()

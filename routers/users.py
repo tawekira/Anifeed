@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlmodel import Session, select
 from models import User, UserCreate
-from db import get_session, get_current_user
+from db import get_session
+from security import get_current_user, get_password_hash
 
 router = APIRouter(
     prefix = "/users",
@@ -10,7 +11,6 @@ router = APIRouter(
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_user(user_input: UserCreate, session: Session = Depends(get_session)):
-    user = User.model_validate(user_input)
 
     statement = select(User).where(User.username == user_input.username)
     existing_username = session.exec(statement).first()
@@ -20,6 +20,11 @@ def create_user(user_input: UserCreate, session: Session = Depends(get_session))
             status_code=status.HTTP_400_BAD_REQUEST,
             detail = f"Username '{user_input.username}' is already taken"
         )
+
+    user = User(
+        username=user_input.username,
+        hashed_password=get_password_hash(user_input.password)
+    )
 
     session.add(user)
     session.commit()

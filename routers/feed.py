@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from sqlmodel import Session, select
 from sqlalchemy import or_, and_
 from models import User, Follow, Event, CursorPaginatedResponse
-from db import get_session, get_current_user
+from db import get_session
+from security import get_current_user
 
 router = APIRouter(
     prefix="/feed",

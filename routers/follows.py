@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, func
 from sqlalchemy.exc import IntegrityError
 from models import User, Follow
-from db import get_session, get_current_user
+from db import get_session
+from security import get_current_user
 
 router = APIRouter(
     prefix="/users",
