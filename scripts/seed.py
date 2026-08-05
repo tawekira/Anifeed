@@ -1,6 +1,7 @@
 from sqlmodel import Session
 import json
 from models import Anime, User
+from security import create_access_token
 
 def to_anime(entry: dict):
     return Anime(
@@ -34,7 +35,7 @@ def batch_upload(data, engine, batch_size = 1000):
             session.commit()
 
 if __name__ == "__main__":
-    from db import engine
+    from tests.conftest import engine
     import models
     from sqlmodel import SQLModel
 
