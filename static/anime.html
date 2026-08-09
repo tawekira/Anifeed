@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Attack on Titan — Anifeed</title>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+
+  <!-- NAVBAR -->
+  <div id="navbar-container"></div>
+
+  <!-- MAIN CONTENT -->
+  <div class="max-w-4xl mx-auto p-6">
+
+    <div class="card card-side bg-base-100 shadow-sm flex-col lg:flex-row">
+
+      <!-- Poster -->
+      <figure class="w-full lg:w-80 h-72 lg:h-auto shrink-0">
+        <img
+          id="anime-poster"
+          src=""
+          alt="Loading..."
+          class="w-full h-full object-cover bg-base-300" />
+      </figure>
+
+      <!-- Info -->
+      <div class="card-body lg:min-h-[450px] justify-between">
+
+        <div>
+          <div class="flex items-start justify-between gap-4">
+            <h1 id="anime-title" class="card-title text-3xl">Attack on Titan</h1>
+            <span id="anime-status" class="badge badge-success shrink-0">Completed</span>
+          </div>
+
+          <p id="anime-meta" class="text-base-content/60 mt-1">TV · 25 episodes · Fall 2013</p>
+
+          <!-- Tags -->
+          <div id="anime-tags" class="flex flex-wrap gap-2 mt-4">
+            <span class="badge badge-outline">Action</span>
+            <span class="badge badge-outline">Drama</span>
+            <span class="badge badge-outline">Military</span>
+            <span class="badge badge-outline">Shounen</span>
+            <span class="badge badge-outline">Gore</span>
+          </div>
+
+          <!-- User's tracking status (shown if logged in + entry exists) -->
+          <div id="user-entry-block" class="mt-5 p-4 rounded-lg bg-base-200">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-base-content/60 w-16">Status</span>
+                  <span id="user-entry-status" class="badge badge-info">Watching</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-base-content/60 w-16">Episode</span>
+                  <span id="user-entry-episode" class="font-semibold text-sm">5 / 25</span>
+                </div>
+                <div id="user-rating-block" class="flex items-center gap-2">
+                  <span class="text-sm text-base-content/60 w-16">Rating</span>
+                  <span id="user-rating-value" class="badge badge-warning font-semibold">8/10</span>
+                </div>
+              </div>
+              <button id="edit-entry-btn" class="btn btn-sm btn-outline" onclick="edit_entry_modal.showModal()">Edit</button>
+            </div>
+          </div>
+
+          <!-- Add to list button (shown instead of user-entry-block when no entry exists) -->
+          <button id="add-to-list-btn" class="btn btn-primary btn-sm mt-5 hidden" onclick="edit_entry_modal.showModal()">+ Add to List</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Edit entry modal — single source of truth for status/episode/rating updates, all funnel into one POST /entries call -->
+    <dialog id="edit_entry_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Update your entry</h3>
+
+        <div class="flex flex-col gap-4 mt-4">
+
+          <label class="form-control w-full">
+            <div class="label"><span class="label-text">Status</span></div>
+            <select id="edit-status-input" class="select select-bordered w-full">
+              <option>Watching</option>
+              <option>Completed</option>
+              <option>Plan to Watch</option>
+              <option>On-Hold</option>
+              <option>Dropped</option>
+              <option>Rewatching</option>
+            </select>
+          </label>
+
+          <label class="form-control w-full">
+            <div class="label"><span class="label-text">Episode</span></div>
+            <input id="edit-episode-input" type="number" min="0" max="25" value="5" class="input input-bordered w-full" />
+          </label>
+
+          <label class="form-control w-full">
+            <div class="label"><span class="label-text">Rating (out of 10)</span></div>
+            <input id="edit-rating-input" type="number" min="1" max="10" value="8" class="input input-bordered w-full" />
+          </label>
+
+        </div>
+
+        <div class="modal-action">
+          <form method="dialog" class="flex gap-2">
+            <button class="btn">Cancel</button>
+            <button id="save-entry-btn" class="btn btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/navbar.js?v=2"></script>
+  <script src="js/anime.js"></script>
+</body>
+</html>

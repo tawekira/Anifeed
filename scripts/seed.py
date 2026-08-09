@@ -4,11 +4,16 @@ from models import Anime, User
 from security import create_access_token
 
 def to_anime(entry: dict):
+    score_data = entry.get("score")
+    score = score_data.get("arithmeticGeometricMean") if score_data else None
     return Anime(
         title = entry["title"],
         type = entry["type"],
         episodes = entry["episodes"],
         status = entry["status"],
+        season = entry["animeSeason"]["season"],
+        year = entry["animeSeason"].get("year"),
+        score = score,
         synonyms = entry["synonyms"],
         tags = entry["tags"],
         picture = entry["picture"],
@@ -35,7 +40,7 @@ def batch_upload(data, engine, batch_size = 1000):
             session.commit()
 
 if __name__ == "__main__":
-    from tests.conftest import engine
+    from db import engine
     import models
     from sqlmodel import SQLModel
 

@@ -4,7 +4,6 @@ from sqlalchemy.exc import IntegrityError
 from models import WatchEntry, WatchEntryCreate, Anime, User, WatchStatus, AnimeStatus, Event, EventStatus, OffsetPaginatedResponse
 from db import get_session
 from datetime import datetime, timezone
-from requests import Request
 from security import get_current_user
 
 router = APIRouter(
@@ -17,7 +16,9 @@ def get_entry(
     username: str,
     session: Session = Depends(get_session), 
     page: int = Query(1, ge=1), 
-    page_size: int = Query(20, ge=1, le=50)
+    page_size: int = Query(20, ge=1, le=50),
+    watch_status: WatchStatus | None = Query(None, alias="status"),
+    anime_id: int | None = Query(None)
 ):
     statement = select(User).where(User.username == username)
     user = session.exec(statement).first()
@@ -28,6 +29,12 @@ def get_entry(
     offset = (page-1) * limit
 
     base_query = select(WatchEntry).where(WatchEntry.user_id == user.id)
+
+    if watch_status:
+        base_query = base_query.where(WatchEntry.status == watch_status)
+
+    if anime_id: 
+        base_query = base_query.where(WatchEntry.anime_id == anime_id)
 
     total = session.exec(
         select(func.count()).select_from(base_query.subquery())
@@ -89,27 +96,33 @@ def create_entry(
     from_episode = prev_entry.episode if prev_entry else 0
     to_episode = final_episode
 
-    if event_type:
-        event = Event(
-            user_id=user.id,
-            anime_id=anime.id,
-            username=user.username,
-            anime_name=anime.title,
-            event_type=event_type,
-            event_metadata={"from_episode": from_episode, "to_episode": to_episode}
-        )
-        session.add(event)
+    if prev_entry and prev_entry.episode == final_episode and prev_entry.status == final_status:
+        pass
+    else:
+        if event_type:
+            event = Event(
+                user_id=user.id,
+                anime_id=anime.id,
+                username=user.username,
+                anime_name=anime.title,
+                event_type=event_type,
+                event_metadata={"from_episode": from_episode, "to_episode": to_episode}
+            )
+            session.add(event)
 
     if user_entry.score:
-        event = Event(
-            user_id=user.id,
-            anime_id=anime.id,
-            username=user.username,
-            anime_name=anime.title,
-            event_type=EventStatus.RATED,
-            event_metadata={"score": user_entry.score}
-        )
-        session.add(event)
+        if prev_entry and prev_entry.score == user_entry.score:
+            pass
+        else:
+            event = Event(
+                user_id=user.id,
+                anime_id=anime.id,
+                username=user.username,
+                anime_name=anime.title,
+                event_type=EventStatus.RATED,
+                event_metadata={"score": user_entry.score}
+            )
+            session.add(event)
 
     # Entry Logging
     if prev_entry:

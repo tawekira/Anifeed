@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My List — Anifeed</title>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+
+  <div id="navbar-container"></div>
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+
+    <h1 class="text-3xl font-bold mb-6">My List</h1>
+
+    <!-- Status filter dropdown -->
+    <div class="dropdown mb-6">
+      <div tabindex="0" role="button" class="btn btn-outline btn-sm gap-2">
+        <span>Filter:</span>
+        <span id="status-filter-label" class="font-semibold">All</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+      <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-2 w-48 p-2 shadow">
+        <li><a class="status-option" data-status="">All</a></li>
+        <li><a class="status-option" data-status="Watching">Watching</a></li>
+        <li><a class="status-option" data-status="Completed">Completed</a></li>
+        <li><a class="status-option" data-status="Plan to Watch">Plan to Watch</a></li>
+        <li><a class="status-option" data-status="On-Hold">On-Hold</a></li>
+        <li><a class="status-option" data-status="Dropped">Dropped</a></li>
+        <li><a class="status-option" data-status="Rewatching">Rewatching</a></li>
+      </ul>
+    </div>
+
+    <div id="entries-list" class="flex flex-col gap-2">
+      <!-- rows injected by mylist.js -->
+    </div>
+
+    <div id="entries-empty" class="hidden text-center py-16">
+      <p class="text-base-content/60 mb-3">No entries yet.</p>
+      <a href="discover.html" class="btn btn-primary btn-sm">Find something to watch</a>
+    </div>
+
+    <div class="flex justify-center mt-6">
+      <button id="load-more-btn" class="btn btn-outline btn-sm hidden">Load more</button>
+    </div>
+
+  </div>
+
+  <!-- Edit entry modal (shared for editing any row) -->
+  <dialog id="edit_entry_modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Update entry</h3>
+
+      <div class="flex flex-col gap-4 mt-4">
+        <label class="form-control w-full">
+          <div class="label"><span class="label-text">Status</span></div>
+          <select id="edit-status-input" class="select select-bordered w-full">
+            <option>Watching</option>
+            <option>Completed</option>
+            <option>Plan to Watch</option>
+            <option>On-Hold</option>
+            <option>Dropped</option>
+            <option>Rewatching</option>
+          </select>
+        </label>
+
+        <label class="form-control w-full">
+          <div class="label"><span class="label-text">Episode</span></div>
+          <input id="edit-episode-input" type="number" min="0" class="input input-bordered w-full" />
+        </label>
+
+        <label class="form-control w-full">
+          <div class="label"><span class="label-text">Rating (out of 10)</span></div>
+          <input id="edit-rating-input" type="number" min="1" max="10" class="input input-bordered w-full" />
+        </label>
+      </div>
+
+      <p id="edit-error-message" class="text-error text-sm mt-3 hidden"></p>
+
+      <div class="modal-action">
+        <button id="cancel-entry-btn" class="btn">Cancel</button>
+        <button id="save-entry-btn" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <script src="js/api.js"></script>
+  <script src="js/navbar.js?v=2"></script>
+  <script src="js/mylist.js"></script>
+</body>
+</html>

@@ -22,26 +22,47 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-class Type(StrEnum):
+class NotificationType(StrEnum):
+    NEW_FOLLOWER = "New Follower"
+
+class Notification(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
+    actor_username: str
+    notification_type: NotificationType
+    read: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class AnimeType(StrEnum):
     TV = "TV"
-    MOVIE = "MOVIE"
+    MOVIE = "Movie"
     OVA = "OVA"
     ONA = "ONA"
-    SPECIAL = "SPECIAL"
-    UNKNOWN = "UNKNOWN"
+    SPECIAL = "Special"
+    UNKNOWN = "Unknown"
 
 class AnimeStatus(StrEnum):
-    FINISHED = "FINISHED"
-    ONGOING = "ONGOING"
-    UPCOMING = "UPCOMING"
-    UNKNOWN = "UNKNOWN"
+    FINISHED = "Finished"
+    ONGOING = "Ongoing"
+    UPCOMING = "Upcoming"
+    UNKNOWN = "Unknown"
+
+class AnimeSeason(StrEnum):
+    SPRING = "Spring"
+    SUMMER = "Summer"
+    FALL = "Fall"
+    WINTER = "Winter"
+    UNDEFINED = "Unknown"
 
 class Anime(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     title: str
-    type: Type
+    type: AnimeType
     episodes: int
     status: AnimeStatus
+    season: AnimeSeason
+    year: int | None = None
+    score: float | None
     synonyms: list[str] = Field(default=[], sa_type=sa.JSON)
     tags: list[str] = Field(default=[], sa_type=sa.JSON)
     picture: str
@@ -60,6 +81,13 @@ class User(SQLModel, table=True):
         description="Username must be 3-20 characters and contain only alphanumeric, underscores, or periods."
     )
     hashed_password: str
+
+class UserPublic(BaseModel):
+    id: int
+    username: str
+    entries_count: int
+    follower_count: int
+    is_following: bool = False
 
 class WatchStatus(StrEnum):
     WATCHING = "Watching"

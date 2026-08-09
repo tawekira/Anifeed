@@ -24,8 +24,11 @@ def get_feed(
 
     statement = select(Event).where(Event.user_id.in_(followed)).order_by(Event.created_at.desc(), Event.id.desc())
     if cursor: 
-        cursor_created_at, id_str = cursor.rsplit("_", 1)
-        cursor_id = int(id_str)
+        try:
+            cursor_created_at, id_str = cursor.rsplit("_", 1)
+            cursor_id = int(id_str)
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid cursor")
         statement = statement.where(or_(Event.created_at < cursor_created_at, and_(Event.created_at == cursor_created_at, Event.id < cursor_id)))
 
     events = session.exec(statement.limit(limit+1)).all()

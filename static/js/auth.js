@@ -1,42 +1,31 @@
-const API_BASE =  "http://127.0.0.1:8000";
+// js/auth.js
+// Handles the login form submission. Depends on api.js being loaded first.
 
-const form = document.getElementById("login-form");
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
+const loginForm = document.getElementById("login-form");
 const errorMessage = document.getElementById("error-message");
 
-usernameInput.addEventListener('input', () => errorMessage.classList.add('hidden'));
-passwordInput.addEventListener('input', () => errorMessage.classList.add('hidden'));
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const formData = new FormData(form);
-    const urlEncodedData = new URLSearchParams(formData);
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+
+    errorMessage.classList.add("hidden");
+
+    const submitBtn = loginForm.querySelector("button[type=submit]");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
 
     try {
-        const response = await fetch(`${API_BASE}/auth/token`, {
-            method: 'POST',
-            body: urlEncodedData
-        });
-
-        if (!response.ok) {
-            const errorDetails = await response.json();
-            console.error('Server Validation Error:', errorDetails);
-            form.reset();
-            errorMessage.classList.remove('hidden');
-            return;
-        }
-
-        const result = await response.json();
-        console.log('Login Success');
-
-        localStorage.setItem('access_token', result.access_token);
-
-        window.location.replace("index.html");
-
-    } catch (error) {
-        console.error('Submisson failed:', error);
+      const { access_token } = await api.login(username, password);
+      setToken(access_token);
+      window.location.href = "index.html";
+    } catch (err) {
+      errorMessage.textContent = err.message || "Invalid username and/or password";
+      errorMessage.classList.remove("hidden");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Login";
     }
-
-});
-
+  });
+}

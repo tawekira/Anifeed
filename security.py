@@ -61,3 +61,19 @@ def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Dep
         raise credentials_exception
     return user
 
+def get_current_user_optional(
+        token: str | None = Depends(OAuth2PasswordBearer(tokenUrl="auth/token", auto_error=False)),
+        session: Session = Depends(get_session)
+):
+    if token is None:
+        return None
+    try: 
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            return None
+    except InvalidTokenError:
+        return None
+    return get_user(username, session)
+
+

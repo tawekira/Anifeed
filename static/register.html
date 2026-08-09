@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign up — Anifeed</title>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+
+  <div id="navbar-container">
+    <div class="navbar bg-base-100 shadow-sm px-4">
+      <div class="navbar-start">
+        <a href="index.html" class="text-xl font-bold">Anifeed</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-center px-4 py-16">
+    <div class="card w-full max-w-sm bg-base-100 shadow-sm">
+      <div class="card-body">
+
+        <h1 class="text-2xl font-bold text-center">Create an account</h1>
+        <p class="text-center text-base-content/60 text-sm mt-1">Start tracking what you watch</p>
+
+        <form id="register-form" class="mt-6 flex flex-col gap-4">
+
+          <label class="form-control w-full">
+            <div class="label"><span class="label-text">Username</span></div>
+            <input type="text" id="username" name="username" placeholder="Username"
+                   class="input input-bordered w-full" required minlength="3" maxlength="20"
+                   pattern="^[a-zA-Z0-9._]{3,20}$" />
+            <div class="label">
+              <span class="label-text-alt text-base-content/50">3-20 characters, letters/numbers/./_ only</span>
+            </div>
+          </label>
+
+          <label class="form-control w-full">
+            <div class="label"><span class="label-text">Password</span></div>
+            <input type="password" id="password" name="password" placeholder="Password"
+                   class="input input-bordered w-full" required minlength="8" />
+            <div class="label">
+              <span class="label-text-alt text-base-content/50">At least 8 characters</span>
+            </div>
+          </label>
+
+          <p id="error-message" class="text-error text-sm hidden"></p>
+          <p id="success-message" class="text-success text-sm hidden">Account created! Redirecting to login...</p>
+
+          <button type="submit" class="btn btn-primary w-full mt-2">Sign up</button>
+
+        </form>
+
+        <div class="divider text-xs text-base-content/40">OR</div>
+
+        <p class="text-center text-sm">
+          Already have an account?
+          <a href="login.html" class="link link-primary">Log in</a>
+        </p>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>

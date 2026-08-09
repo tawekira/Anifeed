@@ -1,9 +1,62 @@
 <!DOCTYPE html>
-<html>
-    <head>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Feed — Anifeed</title>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
 
-    </head>
-    <body>
-        
-    </body>
+  <!-- NAVBAR -->
+  <div id="navbar-container"></div>
+
+  <div class="max-w-2xl mx-auto px-4 py-8">
+
+    <!-- CURRENTLY WATCHING STRIP -->
+    <section id="currently-watching-section" class="mb-10">
+      <h2 class="text-sm font-semibold text-base-content/60 uppercase tracking-wide mb-3">Currently Watching</h2>
+
+      <div id="currently-watching-strip" class="flex gap-3 overflow-x-auto pb-2">
+      </div>
+
+      <!-- Empty state: user has nothing in "watching" status -->
+      <div id="currently-watching-empty" class="hidden text-sm text-base-content/60 py-4">
+        Nothing in progress. <a href="discover.html" class="link link-primary">Find something to watch</a>.
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ACTIVITY FEED -->
+    <section>
+      <h2 class="text-sm font-semibold text-base-content/60 uppercase tracking-wide mb-3">Activity</h2>
+
+      <div id="activity-feed" class="flex flex-col gap-3">
+      </div>
+
+      <div class="flex justify-center mt-4">
+        <button id="load-more-feed-btn" class="btn btn-outline btn-sm hidden">Load more</button>
+      </div>
+
+      <!-- Empty state A: user follows nobody -->
+      <div id="feed-empty-no-follows" class="hidden text-center py-16">
+        <p class="text-base-content/60 mb-3">Follow people to see their activity here.</p>
+        <a href="discover.html" class="btn btn-primary btn-sm">Find users to follow</a>
+      </div>
+
+      <!-- Empty state B: follows people, but no recent activity -->
+      <div id="feed-empty-no-activity" class="hidden text-center py-16">
+        <p class="text-base-content/60">No recent activity from people you follow.</p>
+      </div>
+
+    </section>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/navbar.js?v=2"></script>
+  <script src="js/feed.js"></script>
+</body>
 </html>

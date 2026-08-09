@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, func
 from sqlalchemy.exc import IntegrityError
-from models import User, Follow
+from models import User, Follow, Notification, NotificationType
 from db import get_session
 from security import get_current_user
 
@@ -33,9 +33,17 @@ def follow(
 
     follow = Follow(follower_id=user.id, followed_id=followed.id)
 
+    notification = Notification(
+        user_id = followed.id,
+        actor_username = user.username,
+        notification_type = NotificationType.NEW_FOLLOWER
+    )
+
     try:
         session.add(follow)
+        session.add(notification)
         session.commit()
+
     except IntegrityError:
         session.rollback()
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Already following {username}")

@@ -1,32 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Log in — Anifeed</title>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
 
-    <head>
-        <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    </head>
+  <!-- NAVBAR (shared component placeholder — populated by js/navbar.js) -->
+  <div id="navbar-container">
+    <div class="navbar bg-base-100 shadow-sm px-4">
+      <div class="navbar-start">
+        <a href="index.html" class="text-xl font-bold">Anifeed</a>
+      </div>
+    </div>
+  </div>
 
-    <body>
-        <div class="flex items-center justify-center min-h-screen">
+  <!-- LOGIN CARD -->
+  <div class="flex items-center justify-center px-4 py-16">
+    <div class="card w-full max-w-sm bg-base-100 shadow-sm">
+      <div class="card-body">
 
-            <form id="login-form">
-                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                    <legend class="fieldset-legend">Login</legend>
+        <h1 class="text-2xl font-bold text-center">Welcome back</h1>
+        <p class="text-center text-base-content/60 text-sm mt-1">Log in to track what you're watching</p>
 
-                    <label class="label" for="username">Username</label>
-                    <input id="username" type="text" name="username" class="input" placeholder="Username" required/>
+        <form id="login-form" class="mt-6 flex flex-col gap-4">
 
-                    <label class="label" for="password">Password</label>
-                    <input id="password" type="password" name="password" class="input" placeholder="Password" required/>
+          <label class="form-control w-full">
+            <div class="label">
+              <span class="label-text">Username</span>
+            </div>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username"
+              class="input input-bordered w-full"
+              required />
+          </label>
 
-                    <p id="error-message" class="text-error text-sm mt-2 hidden">Invalid username and/or password</p>
+          <label class="form-control w-full">
+            <div class="label">
+              <span class="label-text">Password</span>
+            </div>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password"
+              class="input input-bordered w-full"
+              required />
+          </label>
 
-                    <button class="btn btn-neutral mt-4", type="submit">Login</button>
-                </fieldset>
-            </form>
+          <!-- Error message, hidden by default — shown by JS on failed login -->
+          <p id="error-message" class="text-error text-sm hidden">Invalid username and/or password</p>
 
-        </div>
-    </body>
+          <button type="submit" class="btn btn-primary w-full mt-2">Login</button>
 
-    <script src="js/auth.js"></script>
+        </form>
+
+        <div class="divider text-xs text-base-content/40">OR</div>
+
+        <p class="text-center text-sm">
+          Don't have an account?
+          <a href="register.html" class="link link-primary">Sign up</a>
+        </p>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
 </html>
