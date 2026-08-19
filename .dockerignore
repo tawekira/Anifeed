@@ -1,0 +1,8 @@
+app.db
+.env
+__pycache__/
+.pytest_cache/
+.venv/
+tests/
+.gitignore
+*.pyc
