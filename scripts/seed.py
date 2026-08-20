@@ -1,8 +1,9 @@
 from sqlmodel import Session, select, func, SQLModel
-import json
-from models import Anime, User, WatchEntry, WatchStatus, Follow, Event, EventStatus
+import ijson
+from models import Anime, User, WatchEntry, WatchStatus, Follow, Event, EventStatus, Notification, NotificationType
 from security import get_password_hash
 from datetime import datetime, timezone
+
 
 def to_anime(entry: dict):
     score_data = entry.get("score")
@@ -21,24 +22,27 @@ def to_anime(entry: dict):
         thumbnail = entry["thumbnail"]
     )
 
-def load_data():
-    with open("data/anime-offline-database-minified.json", "r", encoding = "utf-8") as f:
-        payload = json.load(f)
-    return payload["data"]
+def stream_data():
+    with open("data/anime-offline-database-minified.json", "rb") as f:
+        for entry in ijson.items(f, "data.item"):
+            yield entry
 
-def batch_upload(data, engine, batch_size = 1000):
+def batch_upload(engine, batch_size = 1000):
     with Session(engine) as session:
         batch = []
-        for i, entry in enumerate(data, start=1):
+        count = 0
+        for entry in stream_data():
             batch.append(to_anime(entry))
             if len(batch) >= batch_size:
                 session.add_all(batch)
                 session.commit()
+                session.expunge_all()
                 batch = []
-                print(f"Inserted {i}/{len(data)}")
+                print(f"Inserted {count}")
         if batch:
             session.add_all(batch)
             session.commit()
+            session.expunge_all()
 
 def seed(engine):
     SQLModel.metadata.create_all(engine)
@@ -48,8 +52,7 @@ def seed(engine):
         if existing > 0:
             return 
         
-        data = load_data()
-        batch_upload(data, engine)
+        batch_upload(engine)
 
         jeremy = User(username="jeremy", hashed_password=get_password_hash("12345678"))
         jon = User(username="jonathan", hashed_password=get_password_hash("12345678"))
