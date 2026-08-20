@@ -2,7 +2,7 @@
 // Shared fetch wrapper for all pages. Handles base URL, auth token attachment,
 // and basic error normalization so individual page scripts don't repeat this logic.
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "";
 
 const TOKEN_KEY = "anifeed_token";
 
